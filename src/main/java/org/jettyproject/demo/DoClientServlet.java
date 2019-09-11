@@ -29,28 +29,35 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.http.HttpClientTransportOverHTTP;
+import org.eclipse.jetty.util.component.LifeCycle;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 
 public class DoClientServlet extends HttpServlet
 {
+    private HttpClient httpClient;
     private WebSocketClient wsClient;
 
     @Override
     public void init() throws ServletException
     {
         super.init();
-        wsClient = (WebSocketClient)getServletContext().getAttribute("my-server-wsclient");
+        HttpClientTransportOverHTTP httpTransport = new HttpClientTransportOverHTTP(1);
+        SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
+        sslContextFactory.setTrustAll(true);
+        sslContextFactory.setExcludeCipherSuites();
+        httpClient = new HttpClient(httpTransport, sslContextFactory);
+        wsClient = new WebSocketClient(httpClient);
+
+        LifeCycle.start(httpClient);
+        LifeCycle.start(wsClient);
 
         System.out.println("(DoClientServlet) classLoader = " + this.getClass().getClassLoader());
         System.out.println("(DoClientServlet) wsClient = " + wsClient);
         System.out.println("(DoClientServlet) wsClient.classLoader = " + wsClient.getClass().getClassLoader());
-        System.out.println("(before) = " + getDump(wsClient.getExecutor()));
-
-        setConfigInt(wsClient.getExecutor(), "setMinThreads", 1);
-        setConfigInt(wsClient.getExecutor(), "setMaxThreads", 50);
-
-        System.out.println("(after) = " + getDump(wsClient.getExecutor()));
     }
 
     @Override
@@ -78,34 +85,6 @@ public class DoClientServlet extends HttpServlet
         finally
         {
             System.out.printf("WebSocketClient classloader = %s%n", wsClient.getClass().getClassLoader());
-        }
-    }
-
-    private String getDump(Object obj)
-    {
-        try
-        {
-            Method method = obj.getClass().getMethod("dump");
-            return (String)method.invoke(obj);
-        }
-        catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignore)
-        {
-            ignore.printStackTrace();
-            return "<error>";
-        }
-    }
-
-    private void setConfigInt(Executor executor, String methodName, int newValue)
-    {
-        try
-        {
-            System.out.printf("Attempting to call %s.%s(%d)%n", executor.getClass().getName(), methodName, newValue);
-            Method method = executor.getClass().getMethod(methodName, Integer.TYPE);
-            method.invoke(executor, newValue);
-        }
-        catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignore)
-        {
-            ignore.printStackTrace();
         }
     }
 }

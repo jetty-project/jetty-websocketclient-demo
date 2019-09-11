@@ -1,21 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_3.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_3.dtd">
 
 <Configure class="org.eclipse.jetty.webapp.WebAppContext">
   <Set name="contextPath">/</Set>
   <Set name="war"><Property name="jetty.webapps" />/jetty-websocket-webapp-demo.war</Set>
-
-  <!-- get WebSocketClient started at server -->
-  <Ref refid="Server">
-    <Call name="getAttribute" id="refServerWsClient">
-      <Arg>jetty-server-WebSocketClient</Arg>
+  <Set name="parentLoaderPriority">true</Set>
+  <Get name="serverClasspathPattern">
+    <!-- force jetty classes to always be used from server, never the webapp -->
+    <Call name="add">
+      <Arg>-org.eclipse.jetty.</Arg>
     </Call>
-  </Ref>
-
-  <!-- Set object into ServletContext attribute -->
-  <Call name="setAttribute">
-    <Arg>my-server-wsclient</Arg><!-- the key name the webapp uses against the ServletContext.getAttribute() call -->
-    <Arg>
-      <Ref refid="refServerWsClient" />
-    </Arg>
-  </Call>
+  </Get>
 </Configure>
