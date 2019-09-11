@@ -1,0 +1,4 @@
+logs/*.log
+webapps/*.war
+*.iml
+.idea/
