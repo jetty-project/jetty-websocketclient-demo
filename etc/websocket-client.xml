@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_3.dtd">
 
 <Configure class="org.eclipse.jetty.server.Server" id="Server">
-  <Call name="setAttribute">
-    <Arg>jetty-server-WebSocketClient</Arg>
-    <Arg>
-      <Ref refid="WsClient" />
-    </Arg>
-  </Call>
-
   <!-- put object into Server attributes,
        so that other processes can access it -->
   <New class="org.eclipse.jetty.websocket.client.WebSocketClient" id="WsClient">
@@ -49,4 +42,11 @@
     </Arg>
     <Call name="start" />
   </New>
+
+  <Call name="setAttribute">
+    <Arg>jetty-server-WebSocketClient</Arg>
+    <Arg>
+      <Ref refid="WsClient" />
+    </Arg>
+  </Call>
 </Configure>

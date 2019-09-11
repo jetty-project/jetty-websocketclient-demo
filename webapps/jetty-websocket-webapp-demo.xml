@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_3.dtd">
 
 <Configure class="org.eclipse.jetty.webapp.WebAppContext">
-  <Call name="setAttribute">
-    <Arg>my-server-wsclient</Arg><!-- the key name the webapp uses against the ServletContext.getAttribute() call -->
-    <Arg>
-      <Ref refid="refServerWsClient" />
-    </Arg>
-  </Call>
+  <Set name="contextPath">/</Set>
+  <Set name="war"><Property name="jetty.webapps" />/jetty-websocket-webapp-demo.war</Set>
+
+  <!-- get WebSocketClient started at server -->
   <Ref refid="Server">
     <Call name="getAttribute" id="refServerWsClient">
       <Arg>jetty-server-WebSocketClient</Arg>
     </Call>
   </Ref>
 
-  <!-- get WebSocketClient started at server -->
-  <Set name="contextPath">/</Set>
-
   <!-- Set object into ServletContext attribute -->
-  <Set name="war"><Property name="jetty.webapps" />/jetty-websocket-webapp-demo.war
-  </Set>
+  <Call name="setAttribute">
+    <Arg>my-server-wsclient</Arg><!-- the key name the webapp uses against the ServletContext.getAttribute() call -->
+    <Arg>
+      <Ref refid="refServerWsClient" />
+    </Arg>
+  </Call>
 </Configure>

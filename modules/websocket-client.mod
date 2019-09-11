@@ -1,6 +1,9 @@
-[description]Enabled WebSocket client creation on server side.
+[description]
+Enabled WebSocket client creation on server side.
 
-  [depend]websocket
+[depend]
+websocket
 
-  [xml]etc/websocket-client.xml
+[xml]
+etc/websocket-client.xml
 
